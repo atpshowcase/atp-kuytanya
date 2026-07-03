@@ -38,6 +38,7 @@ export interface WAStatus {
 export interface QRResponse {
   qr: string;        // base64 PNG, empty when already connected
   connected: boolean;
+  phone?: string;
 }
 
 export interface Message {

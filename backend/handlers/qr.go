@@ -10,12 +10,23 @@ import (
 // GetQR handles GET /api/qr
 func GetQR(c *gin.Context) {
 	userID := c.MustGet("userID").(uint)
+	
+	client := whatsapp.GetUserClient(userID)
+	if client == nil || !client.IsConnected() {
+		go whatsapp.GenerateNewQR(userID)
+	}
+
 	qr := whatsapp.GetQR(userID)
 	connected := whatsapp.IsLoggedIn(userID)
+	phone := ""
+	if client != nil && client.Store != nil && client.Store.ID != nil {
+		phone = "+" + client.Store.ID.User
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"qr":        qr,
 		"connected": connected,
+		"phone":     phone,
 	})
 }
 

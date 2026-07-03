@@ -1,19 +1,24 @@
-import { getMessages, getReplies, getStatus } from "@/lib/api";
+"use client";
+
+import { useEffect, useState } from "react";
+import { getMessages, getReplies, getStatus, Message, AutoReply, WAStatus } from "@/lib/api";
 import { MessageCircle, CheckCircle2, Zap, TrendingUp, LayoutDashboard, ArrowUpRight } from "lucide-react";
 import RecentMessages from "@/components/RecentMessages";
 
-export const dynamic = "force-dynamic";
+export default function DashboardPage() {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [rules, setRules] = useState<AutoReply[]>([]);
+  const [status, setStatus] = useState<WAStatus | null>(null);
 
-export default async function DashboardPage() {
-  let messages: Awaited<ReturnType<typeof getMessages>> = [];
-  let rules: Awaited<ReturnType<typeof getReplies>> = [];
-  let status: Awaited<ReturnType<typeof getStatus>> | null = null;
-
-  try {
-    [messages, rules, status] = await Promise.all([getMessages(), getReplies(), getStatus()]);
-  } catch {
-    // Backend might not be running during development
-  }
+  useEffect(() => {
+    Promise.all([getMessages(), getReplies(), getStatus()])
+      .then(([m, r, s]) => {
+        setMessages(m);
+        setRules(r);
+        setStatus(s);
+      })
+      .catch(() => {});
+  }, []);
 
   const repliedCount = messages.filter((m) => m.replied).length;
   const activeRules = rules.filter((r) => r.is_active).length;
