@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { getQR, logout, QRResponse } from "@/lib/api";
+import { Smartphone, Loader2, CheckCircle2, LogOut, RefreshCw, Unplug, ClipboardList } from "lucide-react";
 
 export default function ConnectPage() {
   const [data, setData] = useState<QRResponse | null>(null);
@@ -53,7 +54,9 @@ export default function ConnectPage() {
   return (
     <>
       <div className="page-header">
-        <h1 className="page-title">📱 Connect WhatsApp</h1>
+        <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Smartphone size={28} color="var(--green)" strokeWidth={2.5} /> Connect WhatsApp
+        </h1>
         <p className="page-subtitle">
           Scan QR code dengan WhatsApp di HP untuk mengaktifkan bot
         </p>
@@ -62,21 +65,25 @@ export default function ConnectPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "24px",
+          gridTemplateColumns: "1fr 1.2fr",
+          gap: "32px",
           alignItems: "start",
         }}
       >
         {/* QR Card */}
-        <div className="card" style={{ textAlign: "center" }}>
+        <div className="card" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "48px 24px", minHeight: "400px" }}>
           {loading ? (
             <div className="empty-state">
-              <div className="empty-state-icon">⏳</div>
+              <div className="empty-state-icon" style={{ display: 'flex', justifyContent: 'center' }}>
+                <Loader2 className="animate-pulse-dot" size={48} strokeWidth={1.5} color="var(--border)" style={{ background: 'transparent' }} />
+              </div>
               <div className="empty-state-text">Menghubungkan ke server…</div>
             </div>
           ) : data?.connected ? (
             <div style={{ padding: "40px 20px" }}>
-              <div style={{ fontSize: "72px", marginBottom: "16px" }}>✅</div>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: "16px" }}>
+                <CheckCircle2 size={72} color="var(--green)" strokeWidth={2} />
+              </div>
               <div
                 style={{
                   fontSize: "22px",
@@ -101,7 +108,7 @@ export default function ConnectPage() {
                 onClick={handleLogout}
                 id="logout-btn"
               >
-                🔌 Logout
+                <LogOut size={16} /> Logout
               </button>
             </div>
           ) : data?.qr ? (
@@ -127,12 +134,12 @@ export default function ConnectPage() {
               {/* QR Image */}
               <div
                 style={{
-                  display: "inline-block",
-                  padding: "12px",
-                  background: "#fff",
-                  borderRadius: "16px",
-                  boxShadow: "0 0 40px rgba(37,211,102,0.2)",
-                  marginBottom: "16px",
+                  padding: "16px",
+                  background: "#ffffff",
+                  borderRadius: "20px",
+                  boxShadow: "0 12px 32px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0,0,0,0.04)",
+                  marginBottom: "24px",
+                  transition: "transform 0.3s ease",
                 }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -149,14 +156,16 @@ export default function ConnectPage() {
                 className="btn btn-ghost"
                 onClick={fetchQR}
                 id="refresh-qr-btn"
-                style={{ marginTop: "8px" }}
+                style={{ width: "100%", maxWidth: "250px", justifyContent: "center" }}
               >
-                🔄 Refresh QR
+                <RefreshCw size={16} /> Refresh QR Code
               </button>
             </>
           ) : (
             <div className="empty-state">
-              <div className="empty-state-icon">🔌</div>
+              <div className="empty-state-icon" style={{ display: 'flex', justifyContent: 'center' }}>
+                <Unplug size={48} strokeWidth={1.5} color="var(--danger)" />
+              </div>
               <div className="empty-state-text">Backend tidak terhubung</div>
               <div className="empty-state-sub">
                 Jalankan <code style={{ color: "var(--green)" }}>go run main.go</code> di folder backend
@@ -176,7 +185,7 @@ export default function ConnectPage() {
                 marginBottom: "16px",
               }}
             >
-              📋 Cara Menghubungkan
+              <ClipboardList size={20} /> Cara Menghubungkan
             </h3>
             {[
               {
@@ -220,15 +229,16 @@ export default function ConnectPage() {
                 <div>
                   <div
                     style={{
-                      fontSize: "14px",
+                      fontSize: "15px",
                       fontWeight: "600",
                       color: "var(--text-primary)",
+                      marginBottom: "4px"
                     }}
                   >
                     {step.title}
                   </div>
                   <div
-                    style={{ fontSize: "12px", color: "var(--text-secondary)" }}
+                    style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.5 }}
                   >
                     {step.desc}
                   </div>
@@ -254,7 +264,7 @@ export default function ConnectPage() {
                   marginBottom: "8px",
                 }}
               >
-                ✅ Keunggulan metode ini
+                <CheckCircle2 size={16} color="var(--green)" /> Keunggulan metode ini
               </div>
               <ul style={{ paddingLeft: "18px" }}>
                 <li>Tidak perlu akun Meta Developer</li>

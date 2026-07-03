@@ -21,6 +21,7 @@ var (
 	Client    *whatsmeow.Client
 	currentQR string
 	mu        sync.RWMutex
+	container *sqlstore.Container
 )
 
 // Init initialises the WhatsApp client using PostgreSQL for session storage.
@@ -31,7 +32,8 @@ func Init() error {
 	ctx := context.Background()
 
 	// Use PostgreSQL — handles concurrent writes properly (no SQLITE_BUSY)
-	container, err := sqlstore.New(ctx, "pgx", config.Cfg.WaDBURL, dbLog)
+	var err error
+	container, err = sqlstore.New(ctx, "pgx", config.Cfg.WaDBURL, dbLog)
 	if err != nil {
 		return fmt.Errorf("failed to open WA store: %w", err)
 	}
@@ -47,34 +49,9 @@ func Init() error {
 
 	if Client.Store.ID == nil {
 		// ── First login: generate QR code ──────────────────────────────────
-		qrChan, _ := Client.GetQRChannel(ctx)
-		if err := Client.Connect(); err != nil {
-			return fmt.Errorf("failed to connect: %w", err)
+		if err := GenerateNewQR(); err != nil {
+			return err
 		}
-
-		go func() {
-			for evt := range qrChan {
-				switch evt.Event {
-				case "code":
-					png, encErr := qrcode.Encode(evt.Code, qrcode.Medium, 256)
-					if encErr != nil {
-						log.Printf("QR encode error: %v", encErr)
-						continue
-					}
-					mu.Lock()
-					currentQR = base64.StdEncoding.EncodeToString(png)
-					mu.Unlock()
-					log.Println("📱 New QR code generated — open the dashboard to scan")
-
-				default:
-					// "success", "timeout", "error"
-					mu.Lock()
-					currentQR = ""
-					mu.Unlock()
-					log.Printf("QR event: %s", evt.Event)
-				}
-			}
-		}()
 	} else {
 		// ── Already logged in: reconnect ────────────────────────────────────
 		if err := Client.Connect(); err != nil {
@@ -82,6 +59,49 @@ func Init() error {
 		}
 		log.Println("✅ WhatsApp reconnected using saved session")
 	}
+
+	return nil
+}
+
+// GenerateNewQR starts the login process and QR channel listener
+func GenerateNewQR() error {
+	if Client == nil {
+		return fmt.Errorf("client not initialized")
+	}
+
+	mu.Lock()
+	currentQR = ""
+	mu.Unlock()
+
+	ctx := context.Background()
+	qrChan, _ := Client.GetQRChannel(ctx)
+	if err := Client.Connect(); err != nil {
+		return fmt.Errorf("failed to connect: %w", err)
+	}
+
+	go func() {
+		for evt := range qrChan {
+			switch evt.Event {
+			case "code":
+				png, encErr := qrcode.Encode(evt.Code, qrcode.Medium, 256)
+				if encErr != nil {
+					log.Printf("QR encode error: %v", encErr)
+					continue
+				}
+				mu.Lock()
+				currentQR = base64.StdEncoding.EncodeToString(png)
+				mu.Unlock()
+				log.Println("📱 New QR code generated — open the dashboard to scan")
+
+			default:
+				// "success", "timeout", "error"
+				mu.Lock()
+				currentQR = ""
+				mu.Unlock()
+				log.Printf("QR event: %s", evt.Event)
+			}
+		}
+	}()
 
 	return nil
 }
@@ -108,4 +128,24 @@ func Disconnect() {
 	if Client != nil {
 		Client.Disconnect()
 	}
+}
+
+// LogoutAndReset completely logs out and prepares a fresh client
+func LogoutAndReset() error {
+	if Client != nil {
+		// Wait for logout request to complete or ignore error if disconnected
+		Client.Logout(context.Background())
+		Client.Disconnect()
+	}
+
+	if container == nil {
+		return fmt.Errorf("store container not initialized")
+	}
+
+	deviceStore := container.NewDevice()
+	clientLog := waLog.Stdout("WAClient", "WARN", true)
+	Client = whatsmeow.NewClient(deviceStore, clientLog)
+	Client.AddEventHandler(handleEvent)
+
+	return GenerateNewQR()
 }

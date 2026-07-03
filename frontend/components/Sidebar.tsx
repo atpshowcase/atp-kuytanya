@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LayoutDashboard, Smartphone, Zap, Settings, MessageSquare } from "lucide-react";
 
 const navItems = [
-  { href: "/", label: "Dashboard", icon: "📊" },
-  { href: "/connect", label: "Connect WhatsApp", icon: "📱" },
-  { href: "/rules", label: "Auto-Reply Rules", icon: "⚡" },
-  { href: "/setup", label: "Setup Guide", icon: "🛠️" },
+  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/connect", label: "Connect WhatsApp", icon: Smartphone },
+  { href: "/rules", label: "Auto-Reply Rules", icon: Zap },
+  { href: "/setup", label: "Setup Guide", icon: Settings },
 ];
 
 export default function Sidebar() {
@@ -16,7 +17,9 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        <div className="sidebar-logo-icon">💬</div>
+        <div className="sidebar-logo-icon">
+          <MessageSquare size={20} color="#fff" strokeWidth={2.5} />
+        </div>
         <span className="sidebar-logo-text">ATP Chatbot</span>
       </div>
 
@@ -32,7 +35,9 @@ export default function Sidebar() {
               href={item.href}
               className={`nav-link ${isActive ? "active" : ""}`}
             >
-              <span className="nav-link-icon">{item.icon}</span>
+              <span className="nav-link-icon">
+                <item.icon size={18} strokeWidth={2} />
+              </span>
               {item.label}
             </Link>
           );

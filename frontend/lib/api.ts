@@ -12,6 +12,7 @@ export interface AutoReply {
 export interface WAStatus {
   connected: boolean;
   logged_in: boolean;
+  phone?: string;
 }
 
 export interface QRResponse {

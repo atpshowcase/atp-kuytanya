@@ -1,3 +1,5 @@
+import { Settings, ClipboardList, Rocket } from "lucide-react";
+
 export default function SetupPage() {
   const steps = [
     {
@@ -156,7 +158,7 @@ export default function SetupPage() {
           rule (e.g., keyword: <code style={{ background: "rgba(255,255,255,0.08)", padding: "1px 6px", borderRadius: "4px" }}>hello</code>, reply:{" "}
           <code style={{ background: "rgba(255,255,255,0.08)", padding: "1px 6px", borderRadius: "4px" }}>Hi! How can I help?</code>). Send a WhatsApp message
           containing that word from any number linked to your sandbox — the bot
-          will reply automatically! 🚀
+          will reply automatically! <Rocket size={16} style={{ display: 'inline', marginLeft: '4px' }} />
         </>
       ),
     },
@@ -165,7 +167,9 @@ export default function SetupPage() {
   return (
     <>
       <div className="page-header">
-        <h1 className="page-title">🛠️ Setup Guide</h1>
+        <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Settings size={28} className="text-green-500" strokeWidth={2.5} /> Setup Guide
+        </h1>
         <p className="page-subtitle">
           Complete step-by-step instructions to get your bot live
         </p>
@@ -181,7 +185,7 @@ export default function SetupPage() {
             marginBottom: "14px",
           }}
         >
-          📋 Required environment variables (backend/.env)
+          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><ClipboardList size={20} /> Required environment variables (backend/.env)</span>
         </h3>
         <div
           style={{
@@ -222,7 +226,7 @@ export default function SetupPage() {
           <div className="step-number">{i + 1}</div>
           <div className="step-content">
             <h3>{step.title}</h3>
-            <p>{step.body}</p>
+            <div style={{ color: "var(--text-secondary)", lineHeight: 1.6 }}>{step.body}</div>
           </div>
         </div>
       ))}

@@ -8,6 +8,7 @@ import {
   deleteReply,
   AutoReply,
 } from "@/lib/api";
+import { Zap, Hourglass, Plus, Edit2, Trash2, HelpCircle } from "lucide-react";
 
 export default function RulesPage() {
   const [rules, setRules] = useState<AutoReply[]>([]);
@@ -83,25 +84,27 @@ export default function RulesPage() {
         style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}
       >
         <div>
-          <h1 className="page-title">⚡ Auto-Reply Rules</h1>
+          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Zap size={28} className="text-green-500" strokeWidth={2.5} /> Auto-Reply Rules
+          </h1>
           <p className="page-subtitle">
             Configure keyword-based auto-reply triggers for your WhatsApp bot
           </p>
         </div>
         <button className="btn btn-primary" onClick={openCreate} id="add-rule-btn">
-          <span>＋</span> Add Rule
+          <Plus size={16} /> Add Rule
         </button>
       </div>
 
       <div className="card">
         {loading ? (
           <div className="empty-state">
-            <div className="empty-state-icon">⏳</div>
+            <div className="empty-state-icon" style={{ display: 'flex', justifyContent: 'center' }}><Hourglass size={48} strokeWidth={1.5} color="var(--border)" /></div>
             <div className="empty-state-text">Loading rules…</div>
           </div>
         ) : rules.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-state-icon">⚡</div>
+            <div className="empty-state-icon" style={{ display: 'flex', justifyContent: 'center' }}><Zap size={48} strokeWidth={1.5} color="var(--border)" /></div>
             <div className="empty-state-text">No auto-reply rules yet</div>
             <div className="empty-state-sub">
               Click &ldquo;Add Rule&rdquo; to create your first auto-reply
@@ -168,14 +171,14 @@ export default function RulesPage() {
                           onClick={() => openEdit(rule)}
                           id={`edit-rule-${rule.id}`}
                         >
-                          ✏️ Edit
+                          <Edit2 size={14} /> Edit
                         </button>
                         <button
                           className="btn btn-danger btn-sm"
                           onClick={() => handleDelete(rule.id)}
                           id={`delete-rule-${rule.id}`}
                         >
-                          🗑️
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </td>
@@ -197,7 +200,7 @@ export default function RulesPage() {
             marginBottom: "12px",
           }}
         >
-          💡 How keyword matching works
+          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><HelpCircle size={18} /> How keyword matching works</span>
         </h3>
         <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.7 }}>
           When a WhatsApp message is received, the bot checks if the message{" "}
@@ -214,7 +217,9 @@ export default function RulesPage() {
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h2 className="modal-title">
-              {editingRule ? "✏️ Edit Rule" : "⚡ New Auto-Reply Rule"}
+              <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                {editingRule ? <><Edit2 size={24} /> Edit Rule</> : <><Zap size={24} /> New Auto-Reply Rule</>}
+              </span>
             </h2>
 
             <div className="form-group">
