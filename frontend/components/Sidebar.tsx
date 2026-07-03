@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Smartphone, Zap, Settings, MessageSquare } from "lucide-react";
 
@@ -28,11 +29,11 @@ export default function Sidebar() {
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-logo">
-        <div className="sidebar-logo-icon">
-          <MessageSquare size={20} color="#fff" strokeWidth={2.5} />
+      <div className="sidebar-header">
+        <div className="brand-logo" style={{ display: 'flex', alignItems: 'center', gap: '12px', fontWeight: 700, fontSize: '18px', color: 'var(--text-primary)' }}>
+          <Image src="/logo.png" alt="Logo" width={32} height={32} style={{ borderRadius: '8px' }} />
+          <span>ATP Chatbot</span>
         </div>
-        <span className="sidebar-logo-text">ATP Chatbot</span>
       </div>
 
       <nav>
