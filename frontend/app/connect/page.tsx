@@ -80,35 +80,52 @@ export default function ConnectPage() {
               <div className="empty-state-text">Menghubungkan ke server…</div>
             </div>
           ) : data?.connected ? (
-            <div style={{ padding: "40px 20px" }}>
-              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: "16px" }}>
-                <CheckCircle2 size={72} color="var(--green)" strokeWidth={2} />
+            <div style={{ padding: "48px 20px", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", width: "100%" }}>
+              <div style={{ position: "relative", marginBottom: "24px" }}>
+                {/* Subtle pulsing background glow */}
+                <div style={{ position: "absolute", inset: "-12px", background: "var(--green)", opacity: 0.15, borderRadius: "50%", filter: "blur(12px)", animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }} />
+                <CheckCircle2 size={80} color="var(--green)" strokeWidth={1.5} style={{ position: "relative", zIndex: 1 }} />
               </div>
               <div
                 style={{
-                  fontSize: "22px",
+                  fontSize: "24px",
                   fontWeight: "700",
-                  color: "var(--green)",
+                  color: "var(--text-primary)",
                   marginBottom: "8px",
+                  letterSpacing: "-0.5px"
                 }}
               >
                 WhatsApp Terhubung!
               </div>
               <p
                 style={{
-                  fontSize: "14px",
+                  fontSize: "15px",
                   color: "var(--text-secondary)",
-                  marginBottom: "28px",
+                  marginBottom: "36px",
+                  maxWidth: "280px",
+                  lineHeight: 1.5
                 }}
               >
-                Bot aktif dan siap membalas pesan otomatis
+                Bot kamu sudah aktif dan siap membalas pesan secara otomatis.
               </p>
+              
               <button
                 className="btn btn-danger"
                 onClick={handleLogout}
                 id="logout-btn"
+                style={{ 
+                  width: "100%", 
+                  maxWidth: "240px", 
+                  justifyContent: "center",
+                  padding: "12px 24px",
+                  fontSize: "15px",
+                  borderRadius: "12px",
+                  fontWeight: 600,
+                  transition: "all 0.2s ease",
+                  boxShadow: "0 4px 12px rgba(239, 68, 68, 0.15)"
+                }}
               >
-                <LogOut size={16} /> Logout
+                <LogOut size={18} style={{ marginRight: "4px" }} /> Logout & Ganti Nomor
               </button>
             </div>
           ) : data?.qr ? (

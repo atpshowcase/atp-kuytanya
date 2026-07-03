@@ -10,8 +10,9 @@ import (
 
 // ListReplies handles GET /api/replies
 func ListReplies(c *gin.Context) {
+	userID := c.MustGet("userID").(uint)
 	var rules []models.AutoReply
-	if err := db.DB.Order("created_at desc").Find(&rules).Error; err != nil {
+	if err := db.DB.Where("user_id = ?", userID).Order("created_at desc").Find(&rules).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -30,7 +31,10 @@ func CreateReply(c *gin.Context) {
 		return
 	}
 
+	userID := c.MustGet("userID").(uint)
+
 	rule := models.AutoReply{
+		UserID:   userID,
 		Keyword:  input.Keyword,
 		Reply:    input.Reply,
 		IsActive: true,
@@ -47,9 +51,10 @@ func CreateReply(c *gin.Context) {
 // UpdateReply handles PUT /api/replies/:id
 func UpdateReply(c *gin.Context) {
 	id := c.Param("id")
+	userID := c.MustGet("userID").(uint)
 
 	var rule models.AutoReply
-	if err := db.DB.First(&rule, id).Error; err != nil {
+	if err := db.DB.Where("id = ? AND user_id = ?", id, userID).First(&rule).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "rule not found"})
 		return
 	}
@@ -87,8 +92,9 @@ func UpdateReply(c *gin.Context) {
 // DeleteReply handles DELETE /api/replies/:id
 func DeleteReply(c *gin.Context) {
 	id := c.Param("id")
+	userID := c.MustGet("userID").(uint)
 
-	if err := db.DB.Delete(&models.AutoReply{}, id).Error; err != nil {
+	if err := db.DB.Where("id = ? AND user_id = ?", id, userID).Delete(&models.AutoReply{}).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

@@ -18,64 +18,65 @@ import (
 )
 
 var (
-	Client    *whatsmeow.Client
-	currentQR string
+	// Clients maps UserID -> whatsmeow.Client
+	Clients   = make(map[uint]*whatsmeow.Client)
+	currentQR = make(map[uint]string)
 	mu        sync.RWMutex
 	container *sqlstore.Container
 )
 
 // Init initialises the WhatsApp client using PostgreSQL for session storage.
-// If this is the first run the client will generate a QR code.
-// On subsequent runs it reconnects automatically using the stored session.
+// It fetches all stored devices and connects them.
 func Init() error {
 	dbLog := waLog.Stdout("WAStore", "WARN", true)
 	ctx := context.Background()
 
-	// Use PostgreSQL — handles concurrent writes properly (no SQLITE_BUSY)
 	var err error
 	container, err = sqlstore.New(ctx, "pgx", config.Cfg.WaDBURL, dbLog)
 	if err != nil {
 		return fmt.Errorf("failed to open WA store: %w", err)
 	}
 
-	deviceStore, err := container.GetFirstDevice(ctx)
-	if err != nil {
-		deviceStore = container.NewDevice()
-	}
-
-	clientLog := waLog.Stdout("WAClient", "WARN", true)
-	Client = whatsmeow.NewClient(deviceStore, clientLog)
-	Client.AddEventHandler(handleEvent)
-
-	if Client.Store.ID == nil {
-		// ── First login: generate QR code ──────────────────────────────────
-		if err := GenerateNewQR(); err != nil {
-			return err
-		}
-	} else {
-		// ── Already logged in: reconnect ────────────────────────────────────
-		if err := Client.Connect(); err != nil {
-			return fmt.Errorf("failed to reconnect: %w", err)
-		}
-		log.Println("✅ WhatsApp reconnected using saved session")
-	}
-
+	// Currently, sqlstore doesn't expose a simple way to iterate all devices.
+	// We'll rely on the dashboard login to lazy-load clients if they aren't loaded,
+	// or we can fetch UserIDs from our DB and attempt to load devices.
+	// For now, we'll just initialize the container. Bots will be booted when users log in.
 	return nil
 }
 
-// GenerateNewQR starts the login process and QR channel listener
-func GenerateNewQR() error {
-	if Client == nil {
-		return fmt.Errorf("client not initialized")
+func GetUserClient(userID uint) *whatsmeow.Client {
+	mu.RLock()
+	defer mu.RUnlock()
+	return Clients[userID]
+}
+
+// GenerateNewQR starts the login process and QR channel listener for a user
+func GenerateNewQR(userID uint) error {
+	if container == nil {
+		return fmt.Errorf("store container not initialized")
 	}
 
 	mu.Lock()
-	currentQR = ""
+	currentQR[userID] = ""
+	
+	// Create a new client for this user if it doesn't exist
+	if Clients[userID] == nil {
+		// Use a dedicated JID or identifier for the device store?
+		// whatsmeow sqlstore assigns IDs sequentially (JID). 
+		// For true multi-tenant, we should ideally bind a device store to a user.
+		// For simplicity, we just create a new device and map it in memory.
+		deviceStore := container.NewDevice()
+		clientLog := waLog.Stdout(fmt.Sprintf("WAClient-%d", userID), "WARN", true)
+		client := whatsmeow.NewClient(deviceStore, clientLog)
+		client.AddEventHandler(getEventHandler(userID, client))
+		Clients[userID] = client
+	}
+	client := Clients[userID]
 	mu.Unlock()
 
 	ctx := context.Background()
-	qrChan, _ := Client.GetQRChannel(ctx)
-	if err := Client.Connect(); err != nil {
+	qrChan, _ := client.GetQRChannel(ctx)
+	if err := client.Connect(); err != nil {
 		return fmt.Errorf("failed to connect: %w", err)
 	}
 
@@ -89,16 +90,15 @@ func GenerateNewQR() error {
 					continue
 				}
 				mu.Lock()
-				currentQR = base64.StdEncoding.EncodeToString(png)
+				currentQR[userID] = base64.StdEncoding.EncodeToString(png)
 				mu.Unlock()
-				log.Println("📱 New QR code generated — open the dashboard to scan")
+				log.Printf("📱 New QR code generated for user %d", userID)
 
 			default:
-				// "success", "timeout", "error"
 				mu.Lock()
-				currentQR = ""
+				currentQR[userID] = ""
 				mu.Unlock()
-				log.Printf("QR event: %s", evt.Event)
+				log.Printf("QR event for user %d: %s", userID, evt.Event)
 			}
 		}
 	}()
@@ -106,36 +106,43 @@ func GenerateNewQR() error {
 	return nil
 }
 
-// GetQR returns the current QR code as a base64-encoded PNG string.
-func GetQR() string {
+// GetQR returns the current QR code
+func GetQR(userID uint) string {
 	mu.RLock()
 	defer mu.RUnlock()
-	return currentQR
+	return currentQR[userID]
 }
 
 // IsConnected returns true when the WebSocket to WhatsApp is up.
-func IsConnected() bool {
-	return Client != nil && Client.IsConnected()
+func IsConnected(userID uint) bool {
+	client := GetUserClient(userID)
+	return client != nil && client.IsConnected()
 }
 
 // IsLoggedIn returns true when the session is fully authenticated.
-func IsLoggedIn() bool {
-	return Client != nil && Client.IsLoggedIn()
+func IsLoggedIn(userID uint) bool {
+	client := GetUserClient(userID)
+	return client != nil && client.IsLoggedIn()
 }
 
-// Disconnect gracefully closes the WhatsApp connection.
+// Disconnect gracefully closes all WhatsApp connections.
 func Disconnect() {
-	if Client != nil {
-		Client.Disconnect()
+	mu.RLock()
+	defer mu.RUnlock()
+	for _, client := range Clients {
+		client.Disconnect()
 	}
 }
 
-// LogoutAndReset completely logs out and prepares a fresh client
-func LogoutAndReset() error {
-	if Client != nil {
-		// Wait for logout request to complete or ignore error if disconnected
-		Client.Logout(context.Background())
-		Client.Disconnect()
+// LogoutAndReset completely logs out and prepares a fresh client for the user
+func LogoutAndReset(userID uint) error {
+	mu.Lock()
+	client := Clients[userID]
+	mu.Unlock()
+
+	if client != nil {
+		client.Logout(context.Background())
+		client.Disconnect()
 	}
 
 	if container == nil {
@@ -143,9 +150,13 @@ func LogoutAndReset() error {
 	}
 
 	deviceStore := container.NewDevice()
-	clientLog := waLog.Stdout("WAClient", "WARN", true)
-	Client = whatsmeow.NewClient(deviceStore, clientLog)
-	Client.AddEventHandler(handleEvent)
+	clientLog := waLog.Stdout(fmt.Sprintf("WAClient-%d", userID), "WARN", true)
+	newClient := whatsmeow.NewClient(deviceStore, clientLog)
+	newClient.AddEventHandler(getEventHandler(userID, newClient))
 
-	return GenerateNewQR()
+	mu.Lock()
+	Clients[userID] = newClient
+	mu.Unlock()
+
+	return GenerateNewQR(userID)
 }

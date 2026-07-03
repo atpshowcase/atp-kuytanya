@@ -3,15 +3,15 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/atp-chatbot/backend/db"
 	"github.com/atp-chatbot/backend/whatsapp"
 	"github.com/gin-gonic/gin"
 )
 
 // GetQR handles GET /api/qr
 func GetQR(c *gin.Context) {
-	qr := whatsapp.GetQR()
-	connected := whatsapp.IsLoggedIn()
+	userID := c.MustGet("userID").(uint)
+	qr := whatsapp.GetQR(userID)
+	connected := whatsapp.IsLoggedIn(userID)
 
 	c.JSON(http.StatusOK, gin.H{
 		"qr":        qr,
@@ -21,23 +21,23 @@ func GetQR(c *gin.Context) {
 
 // GetStatus handles GET /api/status
 func GetStatus(c *gin.Context) {
+	userID := c.MustGet("userID").(uint)
 	phone := ""
-	if whatsapp.Client != nil && whatsapp.Client.Store != nil && whatsapp.Client.Store.ID != nil {
-		phone = "+" + whatsapp.Client.Store.ID.User
+	client := whatsapp.GetUserClient(userID)
+	if client != nil && client.Store != nil && client.Store.ID != nil {
+		phone = "+" + client.Store.ID.User
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"connected": whatsapp.IsConnected(),
-		"logged_in": whatsapp.IsLoggedIn(),
+		"connected": whatsapp.IsConnected(userID),
+		"logged_in": whatsapp.IsLoggedIn(userID),
 		"phone":     phone,
 	})
 }
 
 // Logout handles POST /api/logout
 func Logout(c *gin.Context) {
-	// Clear old messages from a previous session unconditionally
-	db.DB.Exec("DELETE FROM messages")
-
-	if err := whatsapp.LogoutAndReset(); err != nil {
+	userID := c.MustGet("userID").(uint)
+	if err := whatsapp.LogoutAndReset(userID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to logout and reset: " + err.Error()})
 		return
 	}

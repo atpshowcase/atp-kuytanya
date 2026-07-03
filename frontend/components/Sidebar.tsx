@@ -14,6 +14,18 @@ const navItems = [
 export default function Sidebar() {
   const pathname = usePathname();
 
+  if (pathname === "/login" || pathname === "/register") {
+    return null;
+  }
+
+  const handleLogout = async () => {
+    try {
+      const { authLogout } = await import("@/lib/api");
+      await authLogout();
+      window.location.href = "/login";
+    } catch {}
+  };
+
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
@@ -44,12 +56,22 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div style={{ marginTop: "auto", padding: "12px", fontSize: "12px", color: "var(--text-muted)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
-          <div className="animate-pulse-dot" />
-          <span>Bot Active</span>
+      <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: "12px" }}>
+        <button 
+          onClick={handleLogout}
+          style={{ background: "transparent", border: "1px solid var(--border)", padding: "10px", borderRadius: "8px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)", fontWeight: 600, transition: "all 0.2s" }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = "var(--danger)"; e.currentTarget.style.borderColor = "var(--danger)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-secondary)"; e.currentTarget.style.borderColor = "var(--border)"; }}
+        >
+          Logout User
+        </button>
+        <div style={{ padding: "0 12px", fontSize: "12px", color: "var(--text-muted)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
+            <div className="animate-pulse-dot" />
+            <span>Bot Active</span>
+          </div>
+          <span>WhatsApp Business API</span>
         </div>
-        <span>WhatsApp Business API</span>
       </div>
     </aside>
   );

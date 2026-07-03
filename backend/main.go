@@ -9,6 +9,7 @@ import (
 	"github.com/atp-chatbot/backend/config"
 	"github.com/atp-chatbot/backend/db"
 	"github.com/atp-chatbot/backend/handlers"
+	"github.com/atp-chatbot/backend/middleware"
 	wa "github.com/atp-chatbot/backend/whatsapp"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -48,23 +49,35 @@ func main() {
 
 	api := r.Group("/api")
 	{
-		// WhatsApp connection
-		api.GET("/qr", handlers.GetQR)
-		api.GET("/status", handlers.GetStatus)
-		api.POST("/logout", handlers.Logout)
+		// Auth Routes
+		api.POST("/register", handlers.Register)
+		api.POST("/login", handlers.Login)
+		api.POST("/auth/logout", handlers.AuthLogout)
+		
+		// Protected Routes
+		protected := api.Group("")
+		protected.Use(middleware.RequireAuth())
+		{
+			protected.GET("/auth/me", handlers.CheckAuth)
 
-		// Auto-reply rules
-		api.GET("/replies", handlers.ListReplies)
-		api.POST("/replies", handlers.CreateReply)
-		api.PUT("/replies/:id", handlers.UpdateReply)
-		api.DELETE("/replies/:id", handlers.DeleteReply)
+			// WhatsApp connection
+			protected.GET("/qr", handlers.GetQR)
+			protected.GET("/status", handlers.GetStatus)
+			protected.POST("/logout", handlers.Logout)
 
-		// Incoming messages log
-		api.GET("/messages", handlers.ListMessages)
+			// Auto-reply rules
+			protected.GET("/replies", handlers.ListReplies)
+			protected.POST("/replies", handlers.CreateReply)
+			protected.PUT("/replies/:id", handlers.UpdateReply)
+			protected.DELETE("/replies/:id", handlers.DeleteReply)
+
+			// Incoming messages log
+			protected.GET("/messages", handlers.ListMessages)
+		}
 	}
 
 	r.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{"status": "ok", "wa_connected": wa.IsLoggedIn()})
+		c.JSON(200, gin.H{"status": "ok"})
 	})
 
 	log.Printf("🚀 Server running on port %s", config.Cfg.Port)

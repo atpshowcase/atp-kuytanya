@@ -8,22 +8,24 @@ import (
 
 	"github.com/atp-chatbot/backend/db"
 	"github.com/atp-chatbot/backend/models"
+	"go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/proto/waE2E"
 	"go.mau.fi/whatsmeow/types"
 	"go.mau.fi/whatsmeow/types/events"
 	"google.golang.org/protobuf/proto"
 )
 
-// handleEvent is registered with the whatsmeow client.
-// It processes all incoming WhatsApp events.
-func handleEvent(evt interface{}) {
-	switch v := evt.(type) {
-	case *events.Message:
-		processMessage(v)
+// getEventHandler creates a closure for a specific user and client
+func getEventHandler(userID uint, client *whatsmeow.Client) func(interface{}) {
+	return func(evt interface{}) {
+		switch v := evt.(type) {
+		case *events.Message:
+			processMessage(userID, client, v)
+		}
 	}
 }
 
-func processMessage(evt *events.Message) {
+func processMessage(userID uint, client *whatsmeow.Client, evt *events.Message) {
 	// Ignore messages from groups, status updates, and messages sent by us
 	if evt.Info.Chat.Server == types.GroupServer ||
 		evt.Info.Chat.Server == types.BroadcastServer ||
@@ -44,11 +46,18 @@ func processMessage(evt *events.Message) {
 	}
 
 	from := evt.Info.Sender.String()
-	log.Printf("📩 Message from %s: %s", from, body)
+	log.Printf("📩 Message from %s (User %d): %s", from, userID, body)
+
+	botPhone := ""
+	if client != nil && client.Store != nil && client.Store.ID != nil {
+		botPhone = client.Store.ID.User
+	}
 
 	// Save to database
 	record := models.Message{
+		UserID:      userID,
 		WaMessageID: evt.Info.ID,
+		BotPhone:    botPhone,
 		From:        from,
 		Body:        body,
 		ReceivedAt:  time.Now(),
@@ -60,12 +69,12 @@ func processMessage(evt *events.Message) {
 
 	// Find matching auto-reply rule (case-insensitive contains)
 	var rules []models.AutoReply
-	db.DB.Where("is_active = true").Find(&rules)
+	db.DB.Where("is_active = true AND user_id = ?", userID).Find(&rules)
 
 	bodyLower := strings.ToLower(body)
 	for _, rule := range rules {
 		if strings.Contains(bodyLower, strings.ToLower(rule.Keyword)) {
-			sendReply(evt.Info.Chat, rule.Reply)
+			sendReply(client, evt.Info.Chat, rule.Reply)
 
 			// Mark as replied
 			db.DB.Model(&record).Updates(models.Message{
@@ -82,13 +91,13 @@ func processMessage(evt *events.Message) {
 }
 
 // sendReply sends a text message to the given JID.
-func sendReply(to types.JID, text string) {
-	if Client == nil || !Client.IsConnected() {
+func sendReply(client *whatsmeow.Client, to types.JID, text string) {
+	if client == nil || !client.IsConnected() {
 		log.Println("Cannot send reply: client not connected")
 		return
 	}
 
-	_, err := Client.SendMessage(context.Background(), to, &waE2E.Message{
+	_, err := client.SendMessage(context.Background(), to, &waE2E.Message{
 		Conversation: proto.String(text),
 	})
 	if err != nil {
