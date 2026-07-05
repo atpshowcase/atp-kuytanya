@@ -3,49 +3,10 @@ import { Settings, ClipboardList, Rocket } from "lucide-react";
 export default function SetupPage() {
   const steps = [
     {
-      title: "Create a Meta Developer App",
+      title: "Siapkan PostgreSQL",
       body: (
         <>
-          Go to{" "}
-          <a
-            href="https://developers.facebook.com"
-            target="_blank"
-            rel="noreferrer"
-            style={{ color: "var(--green)" }}
-          >
-            developers.facebook.com
-          </a>
-          , click <strong>My Apps → Create App</strong>, choose{" "}
-          <strong>Business</strong>, then add the <strong>WhatsApp</strong>{" "}
-          product to your app.
-        </>
-      ),
-    },
-    {
-      title: "Get your credentials",
-      body: (
-        <>
-          In your app, go to <strong>WhatsApp → API Setup</strong>. Copy your{" "}
-          <strong>Phone Number ID</strong> and generate a temporary (or
-          permanent) <strong>Access Token</strong>. Put them in your{" "}
-          <code
-            style={{
-              background: "rgba(255,255,255,0.08)",
-              padding: "1px 6px",
-              borderRadius: "4px",
-            }}
-          >
-            backend/.env
-          </code>{" "}
-          file.
-        </>
-      ),
-    },
-    {
-      title: "Set up PostgreSQL",
-      body: (
-        <>
-          Create a local database, then update{" "}
+          Buat database lokal, lalu perbarui{" "}
           <code
             style={{
               background: "rgba(255,255,255,0.08)",
@@ -55,8 +16,18 @@ export default function SetupPage() {
           >
             DATABASE_URL
           </code>{" "}
-          in your .env file. The backend will auto-create the tables on first
-          run.
+          dan{" "}
+          <code
+            style={{
+              background: "rgba(255,255,255,0.08)",
+              padding: "1px 6px",
+              borderRadius: "4px",
+            }}
+          >
+            WA_DB_URL
+          </code>{" "}
+          di file .env Anda. Backend akan membuat tabel secara otomatis saat pertama kali
+          dijalankan.
           <div className="code-block">
             createdb atp_chatbot
           </div>
@@ -64,10 +35,10 @@ export default function SetupPage() {
       ),
     },
     {
-      title: "Start the backend",
+      title: "Jalankan Backend",
       body: (
         <>
-          Install Go dependencies and start the server on port 8080.
+          Instal dependensi Go dan jalankan server.
           <div className="code-block">
             cd backend<br />
             cp .env.example .env<br />
@@ -77,67 +48,15 @@ export default function SetupPage() {
       ),
     },
     {
-      title: "Expose your backend with ngrok",
+      title: "Jalankan Frontend",
       body: (
         <>
-          Meta requires a public HTTPS URL for the webhook. Use ngrok to expose
-          your local server.
-          <div className="code-block">
-            ngrok http 8080
-          </div>
-          Copy the <strong>https://</strong> URL it gives you — this is your
-          webhook URL.
-        </>
-      ),
-    },
-    {
-      title: "Register the webhook with Meta",
-      body: (
-        <>
-          In your Meta app, go to <strong>WhatsApp → Configuration</strong>,
-          click <strong>Edit</strong> on the webhook. Enter:
-          <ul style={{ marginTop: "8px", paddingLeft: "20px", lineHeight: 2, color: "var(--text-secondary)", fontSize: "14px" }}>
-            <li>
-              <strong>Callback URL:</strong>{" "}
-              <code
-                style={{
-                  background: "rgba(255,255,255,0.08)",
-                  padding: "1px 6px",
-                  borderRadius: "4px",
-                }}
-              >
-                https://YOUR_NGROK_URL/webhook
-              </code>
-            </li>
-            <li>
-              <strong>Verify Token:</strong> the value of{" "}
-              <code
-                style={{
-                  background: "rgba(255,255,255,0.08)",
-                  padding: "1px 6px",
-                  borderRadius: "4px",
-                }}
-              >
-                WHATSAPP_VERIFY_TOKEN
-              </code>{" "}
-              in your .env
-            </li>
-          </ul>
-          Subscribe to the <strong>messages</strong> field, then click{" "}
-          <strong>Verify and Save</strong>.
-        </>
-      ),
-    },
-    {
-      title: "Start the frontend",
-      body: (
-        <>
-          Run the Next.js dashboard in a separate terminal.
+          Jalankan dasbor Next.js di terminal terpisah.
           <div className="code-block">
             cd frontend<br />
             npm run dev
           </div>
-          Open{" "}
+          Buka{" "}
           <a
             href="http://localhost:3000"
             target="_blank"
@@ -146,19 +65,29 @@ export default function SetupPage() {
           >
             http://localhost:3000
           </a>{" "}
-          to see the dashboard.
+          untuk melihat dasbor.
         </>
       ),
     },
     {
-      title: "Add auto-reply rules & test!",
+      title: "Hubungkan WhatsApp",
       body: (
         <>
-          Go to the <strong>Auto-Reply Rules</strong> page and add your first
-          rule (e.g., keyword: <code style={{ background: "rgba(255,255,255,0.08)", padding: "1px 6px", borderRadius: "4px" }}>hello</code>, reply:{" "}
-          <code style={{ background: "rgba(255,255,255,0.08)", padding: "1px 6px", borderRadius: "4px" }}>Hi! How can I help?</code>). Send a WhatsApp message
-          containing that word from any number linked to your sandbox — the bot
-          will reply automatically! <Rocket size={16} style={{ display: 'inline', marginLeft: '4px' }} />
+          Buka menu <strong>Hubungkan WhatsApp</strong> di dasbor. Pindai kode QR menggunakan 
+          fitur Perangkat Tertaut (Linked Devices) di aplikasi WhatsApp ponsel Anda 
+          untuk menghubungkan bot secara instan.
+        </>
+      ),
+    },
+    {
+      title: "Tambah Aturan Balasan Otomatis & Uji Coba!",
+      body: (
+        <>
+          Buka halaman <strong>Aturan Balasan Otomatis</strong> dan tambahkan aturan pertama
+          Anda (contoh, kata kunci: <code style={{ background: "rgba(255,255,255,0.08)", padding: "1px 6px", borderRadius: "4px" }}>hallo</code>, balasan:{" "}
+          <code style={{ background: "rgba(255,255,255,0.08)", padding: "1px 6px", borderRadius: "4px" }}>Halo juga! Ada yang bisa kami bantu?</code>). 
+          Kirim pesan WhatsApp yang mengandung kata kunci tersebut dari nomor lain ke nomor bot Anda — bot 
+          akan membalas secara otomatis! <Rocket size={16} style={{ display: 'inline', marginLeft: '4px' }} />
         </>
       ),
     },
@@ -168,10 +97,10 @@ export default function SetupPage() {
     <>
       <div className="page-header">
         <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Settings size={28} className="text-green-500" strokeWidth={2.5} /> Setup Guide
+          <Settings size={28} className="text-green-500" strokeWidth={2.5} /> Panduan Pengaturan
         </h1>
         <p className="page-subtitle">
-          Complete step-by-step instructions to get your bot live
+          Instruksi langkah demi langkah untuk mengaktifkan bot Anda
         </p>
       </div>
 
@@ -185,7 +114,7 @@ export default function SetupPage() {
             marginBottom: "14px",
           }}
         >
-          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><ClipboardList size={20} /> Required environment variables (backend/.env)</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><ClipboardList size={20} /> Variabel lingkungan yang diperlukan (backend/.env)</span>
         </h3>
         <div
           style={{
@@ -196,10 +125,9 @@ export default function SetupPage() {
           }}
         >
           {[
-            ["DATABASE_URL", "PostgreSQL connection string"],
-            ["WHATSAPP_TOKEN", "Access token from Meta API Setup page"],
-            ["WHATSAPP_PHONE_ID", "Phone Number ID from Meta API Setup page"],
-            ["WHATSAPP_VERIFY_TOKEN", "Custom string you choose (e.g. my_verify_token)"],
+            ["DATABASE_URL", "String koneksi PostgreSQL untuk data aplikasi"],
+            ["WA_DB_URL", "URL PostgreSQL untuk penyimpanan sesi WhatsApp (whatsmeow)"],
+            ["PORT", "Port untuk menjalankan server backend (opsional, default: 8080)"],
           ].map(([key, desc]) => (
             <div
               key={key}

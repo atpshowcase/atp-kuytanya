@@ -22,7 +22,7 @@ export default function LoginPage() {
       await login(username, password);
       router.push("/");
     } catch (err: any) {
-      setError(err.message || "Login failed");
+      setError(err.message || "Gagal masuk");
     } finally {
       setLoading(false);
     }
@@ -46,11 +46,11 @@ export default function LoginPage() {
               <div className="logo-icon" style={{ overflow: "hidden", background: "transparent", border: "none", boxShadow: "none" }}>
                 <Image src="/logo.png" alt="Logo" width={32} height={32} style={{ borderRadius: '8px' }} />
               </div>
-              ATP Chatbot
+              KuyTanya
             </div>
-            <h1 className="hero-title">Automate your WhatsApp interactions<br/>with elegance.</h1>
+            <h1 className="hero-title">Otomatiskan interaksi WhatsApp Anda<br/>dengan elegan.</h1>
             <p className="hero-subtitle">
-              The premier platform for managing auto-replies and tracking conversations. Connect your customers instantly and effortlessly.
+              Platform utama untuk mengelola balasan otomatis dan melacak percakapan. Hubungkan pelanggan Anda secara instan dan mudah.
             </p>
           </div>
         </div>
@@ -59,8 +59,8 @@ export default function LoginPage() {
         <div className="login-form-wrapper">
           <div className="login-form-container">
             <div className="login-header">
-              <h2>Welcome Back</h2>
-              <p>Sign in to continue to your dashboard</p>
+              <h2>Selamat Datang Kembali</h2>
+              <p>Masuk untuk melanjutkan ke dasbor Anda</p>
             </div>
 
             {error && (
@@ -76,7 +76,7 @@ export default function LoginPage() {
 
             <form onSubmit={handleLogin} className="login-form">
               <div className="input-group">
-                <label>Username</label>
+                <label>Nama Pengguna</label>
                 <div className="input-field">
                   <User size={18} className="input-icon" />
                   <input
@@ -84,13 +84,13 @@ export default function LoginPage() {
                     required
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Enter your username"
+                    placeholder="Masukkan nama pengguna Anda"
                   />
                 </div>
               </div>
 
               <div className="input-group">
-                <label>Password</label>
+                <label>Kata Sandi</label>
                 <div className="input-field">
                   <Lock size={18} className="input-icon" />
                   <input
@@ -112,7 +112,7 @@ export default function LoginPage() {
                   <span className="loading-spinner"></span>
                 ) : (
                   <>
-                    Sign In
+                    Masuk
                     <ArrowRight size={18} className="btn-icon" />
                   </>
                 )}
@@ -120,9 +120,9 @@ export default function LoginPage() {
             </form>
 
             <div className="login-footer">
-              Don't have an account?{" "}
+              Belum punya akun?{" "}
               <Link href="/register" className="register-link">
-                Create one now
+                Buat sekarang
               </Link>
             </div>
           </div>

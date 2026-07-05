@@ -58,10 +58,10 @@ export default function ConnectPage() {
           <div style={{ padding: '12px', background: 'var(--green-glow)', borderRadius: '14px', color: 'var(--green)' }}>
             <Smartphone size={28} strokeWidth={2.5} />
           </div>
-          Connect WhatsApp
+          Hubungkan WhatsApp
         </h1>
         <p className="page-subtitle" style={{ fontSize: '16px', marginTop: '12px' }}>
-          Scan the QR code with WhatsApp on your phone to link your bot instantly.
+          Pindai kode QR dengan WhatsApp di ponsel Anda untuk menghubungkan bot secara instan.
         </p>
       </div>
 
@@ -75,8 +75,8 @@ export default function ConnectPage() {
               <div className="empty-state-icon">
                 <Loader2 className="animate-spin" size={56} strokeWidth={1.5} color="var(--green)" />
               </div>
-              <div className="empty-state-text">Connecting to Server...</div>
-              <div className="empty-state-sub">Waking up your dedicated WhatsApp container</div>
+              <div className="empty-state-text">Menghubungkan ke Server...</div>
+              <div className="empty-state-sub">Membangunkan kontainer WhatsApp khusus Anda</div>
             </div>
           ) : data?.connected ? (
             <div className="connected-state animate-in">
@@ -84,14 +84,14 @@ export default function ConnectPage() {
                 <div className="pulse-ring"></div>
                 <CheckCircle2 size={80} color="var(--green)" strokeWidth={2} className="relative z-10" />
               </div>
-              <h2 className="connected-title">WhatsApp Connected!</h2>
+              <h2 className="connected-title">WhatsApp Terhubung!</h2>
               <p className="connected-desc">
-                Your bot is fully active and ready to handle incoming messages automatically.
+                Bot Anda sepenuhnya aktif dan siap menangani pesan masuk secara otomatis.
               </p>
               
               {data?.phone && (
                 <div className="phone-badge">
-                  Connected as <span className="phone-number">{data.phone.split('.')[0]}</span>
+                  Terhubung sebagai <span className="phone-number">{data.phone.split('.')[0]}</span>
                 </div>
               )}
               
@@ -99,13 +99,13 @@ export default function ConnectPage() {
                 className="btn-danger-premium"
                 onClick={handleLogout}
               >
-                <LogOut size={18} /> Logout & Switch Device
+                <LogOut size={18} /> Keluar & Ganti Perangkat
               </button>
             </div>
           ) : data?.qr ? (
             <div className="qr-state animate-in">
               <div className="qr-countdown">
-                Refreshing in <span className={countdown <= 10 ? 'text-danger' : 'text-green'}>{countdown}s</span>
+                Menyegarkan dalam <span className={countdown <= 10 ? 'text-danger' : 'text-green'}>{countdown}d</span>
               </div>
 
               <div className="qr-image-wrapper">
@@ -121,7 +121,7 @@ export default function ConnectPage() {
                 className="btn-ghost-premium"
                 onClick={fetchQR}
               >
-                <RefreshCw size={16} /> Force Refresh QR
+                <RefreshCw size={16} /> Segarkan Paksa QR
               </button>
             </div>
           ) : (
@@ -129,9 +129,9 @@ export default function ConnectPage() {
               <div className="empty-state-icon">
                 <Unplug size={56} strokeWidth={1.5} color="var(--danger)" />
               </div>
-              <div className="empty-state-text">Backend Disconnected</div>
+              <div className="empty-state-text">Backend Terputus</div>
               <div className="empty-state-sub">
-                Run <code className="code-inline">go run main.go</code> in the backend folder
+                Jalankan <code className="code-inline">go run main.go</code> di folder backend
               </div>
             </div>
           )}
@@ -141,29 +141,29 @@ export default function ConnectPage() {
         <div className="instructions-wrapper animate-in stagger-2">
           <div className="premium-card instructions-card">
             <h3 className="instructions-title">
-              <ClipboardList size={22} color="var(--green)" /> How to Connect
+              <ClipboardList size={22} color="var(--green)" /> Cara Menghubungkan
             </h3>
             <div className="steps-container">
               {[
                 {
-                  title: "Open WhatsApp",
-                  desc: 'Tap the three dots (⋮) icon at the top right of your screen.',
+                  title: "Buka WhatsApp",
+                  desc: 'Ketuk ikon tiga titik (⋮) di kanan atas layar Anda.',
                 },
                 {
-                  title: 'Select "Linked Devices"',
-                  desc: 'Or "Perangkat Tertaut" if using Indonesian.',
+                  title: 'Pilih "Perangkat Tertaut"',
+                  desc: 'Atau "Linked Devices" jika menggunakan bahasa Inggris.',
                 },
                 {
-                  title: 'Tap "Link a Device"',
-                  desc: "Your phone's camera will open automatically.",
+                  title: 'Ketuk "Tautkan Perangkat"',
+                  desc: "Kamera ponsel Anda akan terbuka secara otomatis.",
                 },
                 {
-                  title: "Scan the QR Code",
-                  desc: "Point your phone camera at the QR code shown here.",
+                  title: "Pindai Kode QR",
+                  desc: "Arahkan kamera ponsel Anda ke kode QR yang ditampilkan di sini.",
                 },
                 {
-                  title: "Bot Activated! 🎉",
-                  desc: "Session is saved securely. No need to rescan later.",
+                  title: "Bot Aktif! 🎉",
+                  desc: "Sesi disimpan dengan aman. Tidak perlu memindai ulang nanti.",
                 },
               ].map((step, i) => (
                 <div key={i} className="step-item">
@@ -179,13 +179,13 @@ export default function ConnectPage() {
 
           <div className="premium-card benefits-card">
             <h3 className="benefits-title">
-              <CheckCircle2 size={18} /> Why this method?
+              <CheckCircle2 size={18} /> Mengapa metode ini?
             </h3>
             <ul className="benefits-list">
-              <li>No Meta Developer account required</li>
-              <li>Works with any standard WhatsApp number</li>
-              <li>Persistent session across server reboots</li>
-              <li>Zero limits and completely free</li>
+              <li>Tidak memerlukan akun Meta Developer</li>
+              <li>Bekerja dengan nomor WhatsApp standar apa pun</li>
+              <li>Sesi persisten di seluruh restart server</li>
+              <li>Tanpa batasan dan sepenuhnya gratis</li>
             </ul>
           </div>
         </div>

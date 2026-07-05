@@ -512,7 +512,12 @@ textarea { resize: vertical; min-height: 80px; }
   color: var(--text-muted);
 }
 
-.empty-state-icon { font-size: 48px; margin-bottom: 16px; }
+.empty-state-icon { 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16px; 
+}
 .empty-state-text { font-size: 16px; font-weight: 500; color: var(--text-secondary); }
 .empty-state-sub { font-size: 13px; margin-top: 6px; }
 

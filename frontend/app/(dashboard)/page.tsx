@@ -29,17 +29,17 @@ export default function DashboardPage() {
       <div className="page-header animate-in">
         <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <LayoutDashboard size={28} className="text-green-500" strokeWidth={2.5} />
-          Dashboard
+          Dasbor
         </h1>
         <p className="page-subtitle" style={{ marginBottom: "16px" }}>
-          Monitor your WhatsApp chatbot in real-time
+          Pantau chatbot WhatsApp Anda secara real-time
         </p>
         
         {status?.phone && (
           <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(37, 211, 102, 0.1)", border: "1px solid rgba(37, 211, 102, 0.2)", padding: "6px 12px", borderRadius: "999px" }}>
             <div className="animate-pulse-dot" style={{ width: "8px", height: "8px" }} />
             <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--green)" }}>
-              Connected as {status.phone.replace(/@s\.whatsapp\.net$/, "")}
+              Terhubung sebagai {status.phone.replace(/@s\.whatsapp\.net$/, "")}
             </span>
           </div>
         )}
@@ -58,7 +58,7 @@ export default function DashboardPage() {
           </div>
           <div>
             <div className="stat-value">{messages.length}</div>
-            <div className="stat-label">Total Messages Processed</div>
+            <div className="stat-label">Total Pesan Diproses</div>
           </div>
         </div>
 
@@ -68,7 +68,7 @@ export default function DashboardPage() {
           </div>
           <div>
             <div className="stat-value">{repliedCount}</div>
-            <div className="stat-label">Auto-Replied</div>
+            <div className="stat-label">Dibalas Otomatis</div>
           </div>
         </div>
 
@@ -78,7 +78,7 @@ export default function DashboardPage() {
           </div>
           <div>
             <div className="stat-value">{activeRules}</div>
-            <div className="stat-label">Active Rules</div>
+            <div className="stat-label">Aturan Aktif</div>
           </div>
         </div>
 
@@ -89,7 +89,7 @@ export default function DashboardPage() {
             </div>
             <div>
               <div className="stat-value">{replyRate}%</div>
-              <div className="stat-label">Overall Reply Resolution Rate</div>
+              <div className="stat-label">Tingkat Resolusi Balasan Keseluruhan</div>
               <div style={{ width: '100%', height: '4px', background: 'var(--border)', borderRadius: '2px', marginTop: '12px', overflow: 'hidden' }}>
                 <div style={{ width: `${replyRate}%`, height: '100%', background: 'var(--green)', borderRadius: '2px' }} />
               </div>

@@ -6,10 +6,10 @@ import { usePathname } from "next/navigation";
 import { LayoutDashboard, Smartphone, Zap, Settings, MessageSquare } from "lucide-react";
 
 const navItems = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/connect", label: "Connect WhatsApp", icon: Smartphone },
-  { href: "/rules", label: "Auto-Reply Rules", icon: Zap },
-  { href: "/setup", label: "Setup Guide", icon: Settings },
+  { href: "/", label: "Dasbor", icon: LayoutDashboard },
+  { href: "/connect", label: "Hubungkan WhatsApp", icon: Smartphone },
+  { href: "/rules", label: "Aturan Balasan Otomatis", icon: Zap },
+  { href: "/setup", label: "Panduan Pengaturan", icon: Settings },
 ];
 
 export default function Sidebar() {
@@ -32,7 +32,7 @@ export default function Sidebar() {
       <div className="sidebar-header">
         <div className="brand-logo" style={{ display: 'flex', alignItems: 'center', gap: '12px', fontWeight: 700, fontSize: '18px', color: 'var(--text-primary)' }}>
           <Image src="/logo.png" alt="Logo" width={32} height={32} style={{ borderRadius: '8px' }} />
-          <span>ATP Chatbot</span>
+          <span>KuyTanya</span>
         </div>
       </div>
 
@@ -69,7 +69,7 @@ export default function Sidebar() {
         <div style={{ padding: "0 12px", fontSize: "12px", color: "var(--text-muted)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
             <div className="animate-pulse-dot" />
-            <span>Bot Active</span>
+            <span>Bot Aktif</span>
           </div>
           <span>WhatsApp Business API</span>
         </div>

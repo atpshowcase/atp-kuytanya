@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ATP Chatbot — WhatsApp Auto-Reply Dashboard",
+  title: "KuyTanya — Dasbor Balasan Otomatis WhatsApp",
   description:
-    "Manage your WhatsApp auto-reply rules and monitor incoming messages from a central dashboard.",
+    "Kelola aturan balasan otomatis WhatsApp Anda dan pantau pesan masuk dari dasbor terpusat.",
 };
 
 export default function RootLayout({
@@ -13,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="id">
       <body>
         {children}
       </body>

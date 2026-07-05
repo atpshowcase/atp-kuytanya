@@ -21,7 +21,7 @@ export default function RegisterPage() {
       await register(username, password);
       router.push("/login?registered=true");
     } catch (err: any) {
-      setError(err.message || "Registration failed");
+      setError(err.message || "Registrasi gagal");
     } finally {
       setLoading(false);
     }
@@ -31,8 +31,8 @@ export default function RegisterPage() {
     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "80vh" }}>
       <div className="card" style={{ width: "100%", maxWidth: "400px", padding: "40px" }}>
         <div style={{ textAlign: "center", marginBottom: "32px" }}>
-          <h1 style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "8px" }}>Create Account</h1>
-          <p style={{ color: "var(--text-secondary)", fontSize: "15px" }}>Join ATP Chatbot</p>
+          <h1 style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "8px" }}>Buat Akun</h1>
+          <p style={{ color: "var(--text-secondary)", fontSize: "15px" }}>Bergabung dengan KuyTanya</p>
         </div>
 
         {error && (
@@ -43,7 +43,7 @@ export default function RegisterPage() {
 
         <form onSubmit={handleRegister} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           <div>
-            <label style={{ display: "block", fontSize: "14px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "8px" }}>Username</label>
+            <label style={{ display: "block", fontSize: "14px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "8px" }}>Nama Pengguna</label>
             <div style={{ position: "relative" }}>
               <User size={18} color="var(--text-secondary)" style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)" }} />
               <input
@@ -52,13 +52,13 @@ export default function RegisterPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 style={{ width: "100%", padding: "12px 16px 12px 42px", borderRadius: "12px", border: "1px solid var(--border)", outline: "none", fontSize: "15px" }}
-                placeholder="Choose a username"
+                placeholder="Pilih nama pengguna"
               />
             </div>
           </div>
 
           <div>
-            <label style={{ display: "block", fontSize: "14px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "8px" }}>Password</label>
+            <label style={{ display: "block", fontSize: "14px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "8px" }}>Kata Sandi</label>
             <div style={{ position: "relative" }}>
               <Lock size={18} color="var(--text-secondary)" style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)" }} />
               <input
@@ -67,7 +67,7 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 style={{ width: "100%", padding: "12px 16px 12px 42px", borderRadius: "12px", border: "1px solid var(--border)", outline: "none", fontSize: "15px" }}
-                placeholder="Create a password"
+                placeholder="Buat kata sandi"
               />
             </div>
           </div>
@@ -78,14 +78,14 @@ export default function RegisterPage() {
             disabled={loading}
             style={{ width: "100%", justifyContent: "center", padding: "14px", marginTop: "8px", borderRadius: "12px", fontSize: "16px" }}
           >
-            {loading ? "Creating..." : <><UserPlus size={18} /> Sign Up</>}
+            {loading ? "Membuat..." : <><UserPlus size={18} /> Daftar</>}
           </button>
         </form>
 
         <div style={{ textAlign: "center", marginTop: "24px", fontSize: "14px", color: "var(--text-secondary)" }}>
-          Already have an account?{" "}
+          Sudah punya akun?{" "}
           <Link href="/login" style={{ color: "var(--green)", fontWeight: 600, textDecoration: "none" }}>
-            Sign in here
+            Masuk di sini
           </Link>
         </div>
       </div>

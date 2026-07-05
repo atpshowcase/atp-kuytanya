@@ -37,7 +37,7 @@ export default function RecentMessages({ messages }: { messages: Message[] }) {
             color: "var(--text-primary)",
           }}
         >
-          Recent Activity
+          Aktivitas Terbaru
         </h2>
         <span
           style={{
@@ -49,7 +49,7 @@ export default function RecentMessages({ messages }: { messages: Message[] }) {
             borderRadius: "999px",
           }}
         >
-          Total: {messages.length} Messages
+          Total: {messages.length} Pesan
         </span>
       </div>
 
@@ -58,9 +58,9 @@ export default function RecentMessages({ messages }: { messages: Message[] }) {
           <div className="empty-state-icon" style={{ display: "flex", justifyContent: "center" }}>
             <Inbox size={48} strokeWidth={1.5} color="var(--border)" />
           </div>
-          <div className="empty-state-text">No messages yet</div>
+          <div className="empty-state-text">Belum ada pesan</div>
           <div className="empty-state-sub">
-            Messages will appear here once your bot receives them
+            Pesan akan muncul di sini setelah bot Anda menerimanya
           </div>
         </div>
       ) : (
@@ -69,11 +69,11 @@ export default function RecentMessages({ messages }: { messages: Message[] }) {
             <table>
               <thead>
                 <tr>
-                  <th>From</th>
-                  <th>Message</th>
+                  <th>Dari</th>
+                  <th>Pesan</th>
                   <th>Status</th>
-                  <th>Reply Sent</th>
-                  <th>Time</th>
+                  <th>Balasan Terkirim</th>
+                  <th>Waktu</th>
                 </tr>
               </thead>
               <tbody>
@@ -104,9 +104,9 @@ export default function RecentMessages({ messages }: { messages: Message[] }) {
                     </td>
                     <td>
                       {msg.replied ? (
-                        <span className="badge badge-green">✓ Replied</span>
+                        <span className="badge badge-green">✓ Dibalas</span>
                       ) : (
-                        <span className="badge badge-gray">— No match</span>
+                        <span className="badge badge-gray">— Tidak cocok</span>
                       )}
                     </td>
                     <td
@@ -146,7 +146,7 @@ export default function RecentMessages({ messages }: { messages: Message[] }) {
               }}
             >
               <div style={{ fontSize: "13px", color: "var(--text-secondary)", fontWeight: 500 }}>
-                Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, messages.length)} of {messages.length}
+                Menampilkan {startIndex + 1} hingga {Math.min(startIndex + itemsPerPage, messages.length)} dari {messages.length}
               </div>
               <div style={{ display: "flex", gap: "8px" }}>
                 <button
@@ -155,7 +155,7 @@ export default function RecentMessages({ messages }: { messages: Message[] }) {
                   disabled={currentPage === 1}
                   style={{ opacity: currentPage === 1 ? 0.5 : 1, cursor: currentPage === 1 ? "not-allowed" : "pointer" }}
                 >
-                  <ChevronLeft size={16} /> Previous
+                  <ChevronLeft size={16} /> Sebelumnya
                 </button>
                 <div style={{ display: "flex", gap: "4px", alignItems: "center" }}>
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -188,7 +188,7 @@ export default function RecentMessages({ messages }: { messages: Message[] }) {
                   disabled={currentPage === totalPages}
                   style={{ opacity: currentPage === totalPages ? 0.5 : 1, cursor: currentPage === totalPages ? "not-allowed" : "pointer" }}
                 >
-                  Next <ChevronRight size={16} />
+                  Berikutnya <ChevronRight size={16} />
                 </button>
               </div>
             </div>

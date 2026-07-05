@@ -8,7 +8,7 @@ import {
   deleteReply,
   AutoReply,
 } from "@/lib/api";
-import { Zap, Hourglass, Plus, Edit2, Trash2, HelpCircle } from "lucide-react";
+import { Zap, Hourglass, Plus, Edit2, Trash2, HelpCircle, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function RulesPage() {
   const [rules, setRules] = useState<AutoReply[]>([]);
@@ -18,6 +18,13 @@ export default function RulesPage() {
   const [keyword, setKeyword] = useState("");
   const [reply, setReply] = useState("");
   const [saving, setSaving] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+
+  const indexOfLastRule = currentPage * itemsPerPage;
+  const indexOfFirstRule = indexOfLastRule - itemsPerPage;
+  const currentRules = rules.slice(indexOfFirstRule, indexOfLastRule);
+  const totalPages = Math.ceil(rules.length / itemsPerPage);
 
   const fetchRules = async () => {
     try {
@@ -60,7 +67,7 @@ export default function RulesPage() {
       await fetchRules();
       setShowModal(false);
     } catch (e) {
-      alert("Failed to save. Make sure the backend is running.");
+      alert("Gagal menyimpan. Pastikan backend sedang berjalan.");
     } finally {
       setSaving(false);
     }
@@ -72,7 +79,7 @@ export default function RulesPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Delete this auto-reply rule?")) return;
+    if (!confirm("Hapus aturan balasan otomatis ini?")) return;
     await deleteReply(id);
     await fetchRules();
   };
@@ -85,14 +92,14 @@ export default function RulesPage() {
       >
         <div>
           <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <Zap size={28} className="text-green-500" strokeWidth={2.5} /> Auto-Reply Rules
+            <Zap size={28} className="text-green-500" strokeWidth={2.5} /> Aturan Balasan Otomatis
           </h1>
           <p className="page-subtitle">
-            Configure keyword-based auto-reply triggers for your WhatsApp bot
+            Konfigurasi pemicu balasan otomatis berdasarkan kata kunci untuk bot WhatsApp Anda
           </p>
         </div>
         <button className="btn btn-primary" onClick={openCreate} id="add-rule-btn">
-          <Plus size={16} /> Add Rule
+          <Plus size={16} /> Tambah Aturan
         </button>
       </div>
 
@@ -100,14 +107,14 @@ export default function RulesPage() {
         {loading ? (
           <div className="empty-state">
             <div className="empty-state-icon" style={{ display: 'flex', justifyContent: 'center' }}><Hourglass size={48} strokeWidth={1.5} color="var(--border)" /></div>
-            <div className="empty-state-text">Loading rules…</div>
+            <div className="empty-state-text">Memuat aturan…</div>
           </div>
         ) : rules.length === 0 ? (
           <div className="empty-state">
             <div className="empty-state-icon" style={{ display: 'flex', justifyContent: 'center' }}><Zap size={48} strokeWidth={1.5} color="var(--border)" /></div>
-            <div className="empty-state-text">No auto-reply rules yet</div>
+            <div className="empty-state-text">Belum ada aturan balasan otomatis</div>
             <div className="empty-state-sub">
-              Click &ldquo;Add Rule&rdquo; to create your first auto-reply
+              Klik &ldquo;Tambah Aturan&rdquo; untuk membuat balasan otomatis pertama Anda
             </div>
           </div>
         ) : (
@@ -115,15 +122,15 @@ export default function RulesPage() {
             <table>
               <thead>
                 <tr>
-                  <th>Keyword</th>
-                  <th>Reply Message</th>
+                  <th>Kata Kunci</th>
+                  <th>Pesan Balasan</th>
                   <th>Status</th>
-                  <th>Created</th>
-                  <th>Actions</th>
+                  <th>Dibuat</th>
+                  <th>Aksi</th>
                 </tr>
               </thead>
               <tbody>
-                {rules.map((rule) => (
+                {currentRules.map((rule) => (
                   <tr key={rule.id}>
                     <td>
                       <span
@@ -186,6 +193,30 @@ export default function RulesPage() {
                 ))}
               </tbody>
             </table>
+            
+            {totalPages > 1 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderTop: '1px solid var(--border)' }}>
+                <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+                  Menampilkan {indexOfFirstRule + 1} hingga {Math.min(indexOfLastRule, rules.length)} dari {rules.length} entri
+                </span>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button 
+                    className="btn btn-ghost btn-sm" 
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft size={16} /> Sebelumnya
+                  </button>
+                  <button 
+                    className="btn btn-ghost btn-sm" 
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                  >
+                    Berikutnya <ChevronRight size={16} />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -200,15 +231,15 @@ export default function RulesPage() {
             marginBottom: "12px",
           }}
         >
-          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><HelpCircle size={18} /> How keyword matching works</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><HelpCircle size={18} /> Bagaimana pencocokan kata kunci bekerja</span>
         </h3>
         <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.7 }}>
-          When a WhatsApp message is received, the bot checks if the message{" "}
-          <strong style={{ color: "var(--text-primary)" }}>contains</strong>{" "}
-          any active keyword (case-insensitive). The{" "}
-          <strong style={{ color: "var(--green)" }}>first matching rule</strong>{" "}
-          fires and its reply is sent back. Rules are checked in order of
-          creation date.
+          Ketika pesan WhatsApp diterima, bot memeriksa apakah pesan tersebut{" "}
+          <strong style={{ color: "var(--text-primary)" }}>mengandung</strong>{" "}
+          kata kunci aktif (tidak peka huruf besar/kecil).{" "}
+          <strong style={{ color: "var(--green)" }}>Aturan pertama yang cocok</strong>{" "}
+          akan dieksekusi dan balasannya akan dikirim. Aturan diperiksa berdasarkan
+          urutan tanggal pembuatan.
         </p>
       </div>
 
@@ -218,18 +249,18 @@ export default function RulesPage() {
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h2 className="modal-title">
               <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                {editingRule ? <><Edit2 size={24} /> Edit Rule</> : <><Zap size={24} /> New Auto-Reply Rule</>}
+                {editingRule ? <><Edit2 size={24} /> Edit Aturan</> : <><Zap size={24} /> Aturan Balasan Otomatis Baru</>}
               </span>
             </h2>
 
             <div className="form-group">
-              <label htmlFor="keyword-input">Keyword (trigger)</label>
+              <label htmlFor="keyword-input">Kata Kunci (pemicu)</label>
               <input
                 id="keyword-input"
                 type="text"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
-                placeholder="e.g. hello, price, help"
+                placeholder="contoh: halo, harga, bantuan"
               />
               <p
                 style={{
@@ -238,17 +269,17 @@ export default function RulesPage() {
                   marginTop: "4px",
                 }}
               >
-                The bot replies if the message contains this word
+                Bot akan membalas jika pesan mengandung kata ini
               </p>
             </div>
 
             <div className="form-group">
-              <label htmlFor="reply-input">Reply message</label>
+              <label htmlFor="reply-input">Pesan balasan</label>
               <textarea
                 id="reply-input"
                 value={reply}
                 onChange={(e) => setReply(e.target.value)}
-                placeholder="Hi! Thanks for contacting us. How can we help?"
+                placeholder="Hai! Terima kasih telah menghubungi kami. Ada yang bisa kami bantu?"
               />
             </div>
 
@@ -257,7 +288,7 @@ export default function RulesPage() {
                 className="btn btn-ghost"
                 onClick={() => setShowModal(false)}
               >
-                Cancel
+                Batal
               </button>
               <button
                 className="btn btn-primary"
@@ -265,7 +296,7 @@ export default function RulesPage() {
                 disabled={saving || !keyword.trim() || !reply.trim()}
                 id="save-rule-btn"
               >
-                {saving ? "Saving…" : "Save Rule"}
+                {saving ? "Menyimpan…" : "Simpan Aturan"}
               </button>
             </div>
           </div>
