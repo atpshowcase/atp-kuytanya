@@ -182,11 +182,14 @@ export default function ConnectPage() {
               <CheckCircle2 size={18} /> Mengapa metode ini?
             </h3>
             <ul className="benefits-list">
-              <li>Tidak memerlukan akun Meta Developer</li>
-              <li>Bekerja dengan nomor WhatsApp standar apa pun</li>
-              <li>Sesi persisten di seluruh restart server</li>
-              <li>Tanpa batasan dan sepenuhnya gratis</li>
+              <li><strong>Aman (E2EE):</strong> Terenkripsi penuh (End-to-End) persis seperti WhatsApp Web.</li>
+              <li><strong>Penyimpanan Aman:</strong> Sesi/autentikasi disimpan dengan aman di Database server.</li>
+              <li><strong>Tanpa Biaya:</strong> Gratis tanpa perlu daftar akun Meta Developer.</li>
+              <li><strong>Bebas Nomor:</strong> Bekerja dengan nomor WhatsApp standar apa pun.</li>
             </ul>
+            <div className="warning-highlight">
+              <strong>⚠️ Catatan Keamanan:</strong> Harap gunakan bot ini sebijak mungkin. Pengiriman pesan spam/massal yang dilaporkan oleh pengguna lain dapat mengakibatkan pemblokiran (banned) nomor oleh pihak WhatsApp.
+            </div>
           </div>
         </div>
       </div>
@@ -498,6 +501,21 @@ export default function ConnectPage() {
           border-radius: 4px;
           font-family: monospace;
           font-size: 13px;
+        }
+
+        .warning-highlight {
+          margin-top: 16px;
+          padding: 12px 16px;
+          background: rgba(239, 68, 68, 0.08);
+          border-left: 4px solid var(--danger, #ef4444);
+          border-radius: 4px 8px 8px 4px;
+          font-size: 13px;
+          color: var(--text-secondary);
+          line-height: 1.5;
+        }
+        
+        .warning-highlight strong {
+          color: var(--danger, #ef4444);
         }
       `}} />
     </>
