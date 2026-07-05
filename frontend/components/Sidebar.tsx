@@ -24,7 +24,10 @@ export default function Sidebar() {
       const { authLogout } = await import("@/lib/api");
       await authLogout();
       window.location.href = "/login";
-    } catch {}
+    } catch (err) {
+      console.error("Logout error:", err);
+      window.location.href = "/login";
+    }
   };
 
   return (
