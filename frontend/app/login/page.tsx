@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { login } from "@/lib/api";
 import { useRouter } from "next/navigation";
-import { Lock, User, LogIn, ArrowRight } from "lucide-react";
+import { Lock, User, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -21,8 +21,8 @@ export default function LoginPage() {
     try {
       await login(username, password);
       router.push("/");
-    } catch (err: any) {
-      setError(err.message || "Gagal masuk");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Gagal masuk");
     } finally {
       setLoading(false);
     }

@@ -1,0 +1,23 @@
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.development.example
+!.env.staging.example
+!.env.production.example
+!backend/.env.example
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log
+.cache/
+
+# Build artifacts
+tmp/
+dist/
+build/

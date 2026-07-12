@@ -3,16 +3,16 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/atp-chatbot/backend/db"
 	"github.com/atp-chatbot/backend/models"
+	"github.com/atp-chatbot/backend/repositories"
 	"github.com/gin-gonic/gin"
 )
 
 // ListReplies handles GET /api/replies
 func ListReplies(c *gin.Context) {
 	userID := c.MustGet("userID").(uint)
-	var rules []models.AutoReply
-	if err := db.DB.Where("user_id = ?", userID).Order("created_at desc").Find(&rules).Error; err != nil {
+	rules, err := repositories.ListReplies(userID)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -40,7 +40,7 @@ func CreateReply(c *gin.Context) {
 		IsActive: true,
 	}
 
-	if err := db.DB.Create(&rule).Error; err != nil {
+	if err := repositories.CreateReply(&rule); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -53,8 +53,8 @@ func UpdateReply(c *gin.Context) {
 	id := c.Param("id")
 	userID := c.MustGet("userID").(uint)
 
-	var rule models.AutoReply
-	if err := db.DB.Where("id = ? AND user_id = ?", id, userID).First(&rule).Error; err != nil {
+	rule, err := repositories.FindReplyByIDAndUser(id, userID)
+	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "rule not found"})
 		return
 	}
@@ -81,7 +81,7 @@ func UpdateReply(c *gin.Context) {
 		updates["is_active"] = *input.IsActive
 	}
 
-	if err := db.DB.Model(&rule).Updates(updates).Error; err != nil {
+	if err := repositories.UpdateReply(&rule, updates); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -94,7 +94,7 @@ func DeleteReply(c *gin.Context) {
 	id := c.Param("id")
 	userID := c.MustGet("userID").(uint)
 
-	if err := db.DB.Where("id = ? AND user_id = ?", id, userID).Delete(&models.AutoReply{}).Error; err != nil {
+	if err := repositories.DeleteReply(id, userID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

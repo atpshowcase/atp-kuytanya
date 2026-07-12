@@ -10,7 +10,7 @@ import (
 // GetQR handles GET /api/qr
 func GetQR(c *gin.Context) {
 	userID := c.MustGet("userID").(uint)
-	
+
 	client := whatsapp.GetUserClient(userID)
 	if client == nil || !client.IsConnected() {
 		go whatsapp.GenerateNewQR(userID)
@@ -52,7 +52,6 @@ func Logout(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to logout and reset: " + err.Error()})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{"message": "logged out and reset"})
 }
-

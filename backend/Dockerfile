@@ -11,6 +11,6 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /app
 COPY --from=builder /app/main .
 
-EXPOSE 8086
-ENV PORT=8086
+EXPOSE 8080
+ENV PORT=8080
 CMD ["./main"]

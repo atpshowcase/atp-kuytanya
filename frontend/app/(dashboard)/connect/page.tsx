@@ -23,7 +23,9 @@ export default function ConnectPage() {
 
   // Initial fetch
   useEffect(() => {
-    fetchQR();
+    queueMicrotask(() => {
+      void fetchQR();
+    });
   }, [fetchQR]);
 
   // Auto-refresh QR every 30s (QR codes expire)

@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "KuyTanya — Dasbor Balasan Otomatis WhatsApp",
-  description:
-    "Kelola aturan balasan otomatis WhatsApp Anda dan pantau pesan masuk dari dasbor terpusat.",
+  title: "KuyTanya - WhatsApp Auto-Reply Dashboard",
+  description: "Manage WhatsApp auto-reply rules and monitor incoming messages from one dashboard.",
 };
 
 export default function RootLayout({
@@ -13,10 +12,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id">
-      <body>
-        {children}
-      </body>
+    <html lang="en">
+      <body>{children}</body>
     </html>
   );
 }

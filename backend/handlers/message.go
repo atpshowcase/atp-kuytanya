@@ -3,8 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/atp-chatbot/backend/db"
-	"github.com/atp-chatbot/backend/models"
+	"github.com/atp-chatbot/backend/repositories"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,8 +11,8 @@ import (
 func ListMessages(c *gin.Context) {
 	userID := c.MustGet("userID").(uint)
 
-	var messages []models.Message
-	if err := db.DB.Where("user_id = ?", userID).Order("received_at desc").Limit(100).Find(&messages).Error; err != nil {
+	messages, err := repositories.ListRecentMessages(userID, 100)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

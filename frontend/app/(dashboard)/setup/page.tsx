@@ -1,62 +1,52 @@
-import { Settings, ClipboardList, Rocket } from "lucide-react";
+import { ClipboardList, Rocket, Settings } from "lucide-react";
+
+const codeStyle = {
+  background: "rgba(255,255,255,0.08)",
+  padding: "1px 6px",
+  borderRadius: "4px",
+};
 
 export default function SetupPage() {
   const steps = [
     {
-      title: "Siapkan PostgreSQL",
+      title: "Prepare PostgreSQL",
       body: (
         <>
-          Buat database lokal, lalu perbarui{" "}
-          <code
-            style={{
-              background: "rgba(255,255,255,0.08)",
-              padding: "1px 6px",
-              borderRadius: "4px",
-            }}
-          >
-            DATABASE_URL
-          </code>{" "}
-          dan{" "}
-          <code
-            style={{
-              background: "rgba(255,255,255,0.08)",
-              padding: "1px 6px",
-              borderRadius: "4px",
-            }}
-          >
-            WA_DB_URL
-          </code>{" "}
-          di file .env Anda. Backend akan membuat tabel secara otomatis saat pertama kali
-          dijalankan.
-          <div className="code-block">
-            createdb atp_chatbot
-          </div>
+          Create a database, then update <code style={codeStyle}>DATABASE_URL</code> and{" "}
+          <code style={codeStyle}>WA_DB_URL</code> in your environment file. The backend
+          runs migrations automatically on startup.
+          <div className="code-block">createdb kuytanya_db</div>
         </>
       ),
     },
     {
-      title: "Jalankan Backend",
+      title: "Run the Backend",
       body: (
         <>
-          Instal dependensi Go dan jalankan server.
+          Install Go dependencies and start the API server.
           <div className="code-block">
-            cd backend<br />
-            cp .env.example .env<br />
+            cd backend
+            <br />
+            cp .env.example .env
+            <br />
             go run main.go
           </div>
         </>
       ),
     },
     {
-      title: "Jalankan Frontend",
+      title: "Run the Frontend",
       body: (
         <>
-          Jalankan dasbor Next.js di terminal terpisah.
+          Start the Next.js dashboard in a separate terminal.
           <div className="code-block">
-            cd frontend<br />
+            cd frontend
+            <br />
+            npm install
+            <br />
             npm run dev
           </div>
-          Buka{" "}
+          Open{" "}
           <a
             href="http://localhost:3000"
             target="_blank"
@@ -65,29 +55,28 @@ export default function SetupPage() {
           >
             http://localhost:3000
           </a>{" "}
-          untuk melihat dasbor.
+          to view the dashboard.
         </>
       ),
     },
     {
-      title: "Hubungkan WhatsApp",
+      title: "Connect WhatsApp",
       body: (
         <>
-          Buka menu <strong>Hubungkan WhatsApp</strong> di dasbor. Pindai kode QR menggunakan 
-          fitur Perangkat Tertaut (Linked Devices) di aplikasi WhatsApp ponsel Anda 
-          untuk menghubungkan bot secara instan.
+          Open <strong>Connect WhatsApp</strong> in the dashboard. Scan the QR code from
+          WhatsApp Linked Devices to connect the bot.
         </>
       ),
     },
     {
-      title: "Tambah Aturan Balasan Otomatis & Uji Coba!",
+      title: "Create a Rule and Test",
       body: (
         <>
-          Buka halaman <strong>Aturan Balasan Otomatis</strong> dan tambahkan aturan pertama
-          Anda (contoh, kata kunci: <code style={{ background: "rgba(255,255,255,0.08)", padding: "1px 6px", borderRadius: "4px" }}>hallo</code>, balasan:{" "}
-          <code style={{ background: "rgba(255,255,255,0.08)", padding: "1px 6px", borderRadius: "4px" }}>Halo juga! Ada yang bisa kami bantu?</code>). 
-          Kirim pesan WhatsApp yang mengandung kata kunci tersebut dari nomor lain ke nomor bot Anda — bot 
-          akan membalas secara otomatis! <Rocket size={16} style={{ display: 'inline', marginLeft: '4px' }} />
+          Open <strong>Auto-Reply Rules</strong> and add your first rule, for example{" "}
+          <code style={codeStyle}>hello</code> as the keyword and{" "}
+          <code style={codeStyle}>Hi! How can we help?</code> as the reply. Send a matching
+          WhatsApp message from another number and the bot will respond automatically.{" "}
+          <Rocket size={16} style={{ display: "inline", marginLeft: "4px" }} />
         </>
       ),
     },
@@ -96,15 +85,12 @@ export default function SetupPage() {
   return (
     <>
       <div className="page-header">
-        <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Settings size={28} className="text-green-500" strokeWidth={2.5} /> Panduan Pengaturan
+        <h1 className="page-title" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <Settings size={28} className="text-green-500" strokeWidth={2.5} /> Setup Guide
         </h1>
-        <p className="page-subtitle">
-          Instruksi langkah demi langkah untuk mengaktifkan bot Anda
-        </p>
+        <p className="page-subtitle">Step-by-step instructions to run your bot</p>
       </div>
 
-      {/* API Keys summary */}
       <div className="card" style={{ marginBottom: "24px" }}>
         <h3
           style={{
@@ -114,7 +100,9 @@ export default function SetupPage() {
             marginBottom: "14px",
           }}
         >
-          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><ClipboardList size={20} /> Variabel lingkungan yang diperlukan (backend/.env)</span>
+          <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <ClipboardList size={20} /> Required environment variables
+          </span>
         </h3>
         <div
           style={{
@@ -125,9 +113,11 @@ export default function SetupPage() {
           }}
         >
           {[
-            ["DATABASE_URL", "String koneksi PostgreSQL untuk data aplikasi"],
-            ["WA_DB_URL", "URL PostgreSQL untuk penyimpanan sesi WhatsApp (whatsmeow)"],
-            ["PORT", "Port untuk menjalankan server backend (opsional, default: 8080)"],
+            ["DATABASE_URL", "PostgreSQL connection string for application data"],
+            ["WA_DB_URL", "PostgreSQL connection string for WhatsApp session storage"],
+            ["JWT_SECRET", "Random secret used to sign authentication tokens"],
+            ["CORS_ALLOWED_ORIGINS", "Comma-separated list of allowed frontend origins"],
+            ["PORT", "Backend server port"],
           ].map(([key, desc]) => (
             <div
               key={key}
@@ -142,15 +132,14 @@ export default function SetupPage() {
               }}
             >
               <span style={{ color: "var(--green)", whiteSpace: "nowrap" }}>{key}</span>
-              <span style={{ color: "var(--text-muted)", fontFamily: "inherit" }}>— {desc}</span>
+              <span style={{ color: "var(--text-muted)", fontFamily: "inherit" }}>- {desc}</span>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Steps */}
       {steps.map((step, i) => (
-        <div className="step-card" key={i}>
+        <div className="step-card" key={step.title}>
           <div className="step-number">{i + 1}</div>
           <div className="step-content">
             <h3>{step.title}</h3>

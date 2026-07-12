@@ -20,8 +20,8 @@ export default function RegisterPage() {
     try {
       await register(username, password);
       router.push("/login?registered=true");
-    } catch (err: any) {
-      setError(err.message || "Registrasi gagal");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Registrasi gagal");
     } finally {
       setLoading(false);
     }

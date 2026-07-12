@@ -38,9 +38,9 @@ type Message struct {
 	ID          uint           `json:"id" gorm:"primaryKey;autoIncrement"`
 	UserID      uint           `json:"user_id" gorm:"index;not null;default:0"` // The owner of this message
 	WaMessageID string         `json:"wa_message_id" gorm:"uniqueIndex;not null"`
-	BotPhone    string         `json:"bot_phone" gorm:"index"`        // the bot that received this message
-	From        string         `json:"from" gorm:"not null"`          // sender's WhatsApp number
-	Body        string         `json:"body" gorm:"not null"`        // message text
+	BotPhone    string         `json:"bot_phone" gorm:"index"`       // the bot that received this message
+	From        string         `json:"from" gorm:"not null"`         // sender's WhatsApp number
+	Body        string         `json:"body" gorm:"not null"`         // message text
 	Replied     bool           `json:"replied" gorm:"default:false"` // whether bot replied
 	ReplyText   string         `json:"reply_text"`                   // what bot replied
 	ReceivedAt  time.Time      `json:"received_at"`
@@ -53,8 +53,8 @@ type Message struct {
 type AutoReply struct {
 	ID        uint           `json:"id" gorm:"primaryKey;autoIncrement"`
 	UserID    uint           `json:"user_id" gorm:"index;not null;default:0"` // The owner of this rule
-	Keyword   string         `json:"keyword" gorm:"not null"`       // trigger keyword (case-insensitive)
-	Reply     string         `json:"reply" gorm:"not null"`        // reply message text
+	Keyword   string         `json:"keyword" gorm:"not null"`                 // trigger keyword (case-insensitive)
+	Reply     string         `json:"reply" gorm:"not null"`                   // reply message text
 	IsActive  bool           `json:"is_active" gorm:"default:true"`
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`

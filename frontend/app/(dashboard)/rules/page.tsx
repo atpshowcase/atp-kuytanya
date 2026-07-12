@@ -38,7 +38,9 @@ export default function RulesPage() {
   };
 
   useEffect(() => {
-    fetchRules();
+    queueMicrotask(() => {
+      void fetchRules();
+    });
   }, []);
 
   const openCreate = () => {
@@ -66,7 +68,7 @@ export default function RulesPage() {
       }
       await fetchRules();
       setShowModal(false);
-    } catch (e) {
+    } catch {
       alert("Gagal menyimpan. Pastikan backend sedang berjalan.");
     } finally {
       setSaving(false);

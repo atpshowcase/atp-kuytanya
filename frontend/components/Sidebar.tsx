@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Smartphone, Zap, Settings, MessageSquare } from "lucide-react";
+import { LayoutDashboard, Smartphone, Zap, Settings } from "lucide-react";
 
 const navItems = [
   { href: "/", label: "Dasbor", icon: LayoutDashboard },

@@ -11,6 +11,6 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=builder /app ./
-EXPOSE 2027
-ENV PORT=2027
+EXPOSE 3000
+ENV PORT=3000
 CMD ["npm", "start"]

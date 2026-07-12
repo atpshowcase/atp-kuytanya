@@ -2,22 +2,13 @@ package handlers
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/atp-chatbot/backend/config"
-	"github.com/atp-chatbot/backend/db"
 	"github.com/atp-chatbot/backend/models"
+	"github.com/atp-chatbot/backend/repositories"
+	"github.com/atp-chatbot/backend/services"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 )
-
-func getJwtSecret() []byte {
-	if config.Cfg != nil && config.Cfg.DatabaseURL != "" {
-		return []byte(config.Cfg.DatabaseURL)
-	}
-	// Simple fallback, in a real app use an env var
-	return []byte("atp-chatbot-super-secret-jwt-key")
-}
 
 type AuthRequest struct {
 	Username string `json:"username" binding:"required"`
@@ -33,8 +24,7 @@ func Register(c *gin.Context) {
 	}
 
 	// Check if user exists
-	var existingUser models.User
-	if err := db.DB.Where("username = ?", req.Username).First(&existingUser).Error; err == nil {
+	if _, err := repositories.FindUserByUsername(req.Username); err == nil {
 		c.JSON(http.StatusConflict, gin.H{"error": "Username already taken"})
 		return
 	}
@@ -45,7 +35,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	if err := db.DB.Create(&user).Error; err != nil {
+	if err := repositories.CreateUser(&user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
 		return
 	}
@@ -61,8 +51,8 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	var user models.User
-	if err := db.DB.Where("username = ?", req.Username).First(&user).Error; err != nil {
+	user, err := repositories.FindUserByUsername(req.Username)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
 		return
 	}
@@ -72,28 +62,22 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	// Generate JWT Token
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": user.ID,
-		"exp":     time.Now().Add(time.Hour * 24 * 7).Unix(), // 7 days expiration
-	})
-
-	tokenString, err := token.SignedString(getJwtSecret())
+	tokenString, err := services.CreateAuthToken(user.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
 	}
 
-	// Set HTTP-only cookie
-	c.SetCookie("jwt", tokenString, 3600*24*7, "/", "", false, true)
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie(services.AuthCookieName(), tokenString, 3600*24*7, "/", "", config.Cfg.CookieSecure, true)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Logged in successfully", "user": gin.H{"id": user.ID, "username": user.Username}})
 }
 
 // AuthLogout handles POST /api/auth/logout
 func AuthLogout(c *gin.Context) {
-	// Clear the cookie
-	c.SetCookie("jwt", "", -1, "/", "", false, true)
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie(services.AuthCookieName(), "", -1, "/", "", config.Cfg.CookieSecure, true)
 	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
 }
 
@@ -105,8 +89,8 @@ func CheckAuth(c *gin.Context) {
 		return
 	}
 
-	var user models.User
-	if err := db.DB.First(&user, userID).Error; err != nil {
+	user, err := repositories.FindUserByID(userID)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
 		return
 	}

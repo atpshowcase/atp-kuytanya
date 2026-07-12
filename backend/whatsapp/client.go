@@ -58,11 +58,11 @@ func GenerateNewQR(userID uint) error {
 
 	mu.Lock()
 	currentQR[userID] = ""
-	
+
 	// Create a new client for this user if it doesn't exist
 	if Clients[userID] == nil {
 		// Use a dedicated JID or identifier for the device store?
-		// whatsmeow sqlstore assigns IDs sequentially (JID). 
+		// whatsmeow sqlstore assigns IDs sequentially (JID).
 		// For true multi-tenant, we should ideally bind a device store to a user.
 		// For simplicity, we just create a new device and map it in memory.
 		deviceStore := container.NewDevice()

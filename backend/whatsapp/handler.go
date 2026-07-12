@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/atp-chatbot/backend/db"
 	"github.com/atp-chatbot/backend/models"
+	"github.com/atp-chatbot/backend/repositories"
 	"go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/proto/waE2E"
 	"go.mau.fi/whatsmeow/types"
@@ -62,25 +62,26 @@ func processMessage(userID uint, client *whatsmeow.Client, evt *events.Message) 
 		Body:        body,
 		ReceivedAt:  time.Now(),
 	}
-	if err := db.DB.Where("wa_message_id = ?", evt.Info.ID).FirstOrCreate(&record).Error; err != nil {
+	if err := repositories.FirstOrCreateMessage(&record); err != nil {
 		log.Printf("DB error: %v", err)
 		return
 	}
 
-	// Find matching auto-reply rule (case-insensitive contains)
-	var rules []models.AutoReply
-	db.DB.Where("is_active = true AND user_id = ?", userID).Find(&rules)
+	rules, err := repositories.ListActiveReplies(userID)
+	if err != nil {
+		log.Printf("DB error: %v", err)
+		return
+	}
 
 	bodyLower := strings.ToLower(body)
 	for _, rule := range rules {
 		if strings.Contains(bodyLower, strings.ToLower(rule.Keyword)) {
 			sendReply(client, evt.Info.Chat, rule.Reply)
 
-			// Mark as replied
-			db.DB.Model(&record).Updates(models.Message{
-				Replied:   true,
-				ReplyText: rule.Reply,
-			})
+			if err := repositories.MarkMessageReplied(&record, rule.Reply); err != nil {
+				log.Printf("DB error: %v", err)
+				return
+			}
 
 			log.Printf("✅ Auto-replied to %s with rule '%s'", from, rule.Keyword)
 			return
